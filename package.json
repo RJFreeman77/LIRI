@@ -1,0 +1,27 @@
+{
+  "name": "liri",
+  "version": "1.0.0",
+  "description": "for liri homework",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^6.1.0",
+    "inquirer": "^6.2.0",
+    "moment": "^2.22.2",
+    "node-spotify-api": "^1.0.7",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RJFreeman77/LIRI.git"
+  },
+  "author": "ryan j freeman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RJFreeman77/LIRI/issues"
+  },
+  "homepage": "https://github.com/RJFreeman77/LIRI#readme"
+}
