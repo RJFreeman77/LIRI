@@ -3,6 +3,7 @@ const request = require("request");
 const moment = require('moment');
 const Spotify = require('node-spotify-api');
 const keys = require("./keys.js");
+const inquirer = require("inquirer");
 const spotify = new Spotify(keys.spotify);
 const tmdb = keys.tmdb;
 
