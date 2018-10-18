@@ -6,6 +6,7 @@ const keys = require("./keys.js");
 const inquirer = require("inquirer");
 const spotify = new Spotify(keys.spotify);
 const tmdb = keys.tmdb;
+const bands = keys.bands;
 
 function requestInput() {
     inquirer.prompt([
@@ -20,7 +21,7 @@ function requestInput() {
         switch (command) {
             case "Search Concert":
                 console.log("concert");
-                // bands in town function
+                bandsInTown();
                 break;
             case "Search Song with Spotify":
                 console.log("spotify");
@@ -74,9 +75,9 @@ function spotifySearch() {
                 let link = index.artists[0].external_urls.spotify;
                 let album = index.album.name;
 
-                console.log(`===============================`);
+                console.log("=".repeat(30));
                 console.log(`Artist: ${artist}\nTitle: ${name}\nLink: ${link}\nAlbum: ${album}`);
-                console.log(`===============================\n`);
+                console.log("=".repeat(30) + "\n");
             });
 
             askAnotherQuestion();
@@ -84,7 +85,36 @@ function spotifySearch() {
     });
 }
 
+function bandsInTown() {
+    inquirer.prompt([
+        {
+            name: "artist",
+            message: "Name a Band"
+        }
+    ]).then(function (res) {
+        let artist = res.artist.replace(/\s+/g, '%20');
+        let QUERY_URL = `https://rest.bandsintown.com/artists/${artist}/events?app_id=${bands.id}`;
+        request(QUERY_URL, function (err, res, body) {
+            console.log(QUERY_URL);
+            if (!err && res.statusCode === 200) {
+                console.log(body.properties);
+                // for (let i = 0; i <20; i++) {
+                // }
+                // let venue = body.venue.name;
+                // let venueLocation = body.venue.city + " " + body.venue.region;
+                // let dateRaw = body.datetime;
+                // console.log("=".repeat(30));
+                // console.log(`Venue: ${venue}\nLocation: ${venueLocation}\nDate: ${dateRaw}`);
+                // console.log("=".repeat(30) + "\n"   );
+            }
+        });
+    });
 
 
 
-requestInput();
+
+
+}
+
+
+requestInput(); 
