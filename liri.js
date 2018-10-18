@@ -26,10 +26,9 @@ function requestInput() {
             case "Search Song with Spotify":
                 console.log("spotify");
                 spotifySearch();
-                // spotify function
                 break;
             case "Search a movie":
-                // tmdb function
+                tmdbSearch();
                 console.log("tmdb");
                 break;
             case "Do what the text file says":
@@ -97,22 +96,44 @@ function bandsInTown() {
         request(QUERY_URL, function (err, res, body) {
             if (!err && res.statusCode === 200) {
                 let bodyParsed = JSON.parse(body);
-                for (let i = 0; i < bodyParsed.length; i++) {
-                    let venue = bodyParsed[i].venue.name;
-                    let venueLocation = bodyParsed[i].venue.city + " " + bodyParsed[i].venue.region;
-                    let dateRaw = bodyParsed[i].datetime;
+                bodyParsed.forEach(function (bodyIndex) {
+                    let venue = bodyIndex.venue.name;
+                    let venueLocation = bodyIndex.venue.city + " " + bodyIndex.venue.region;
+                    let dateRaw = bodyIndex.datetime;
                     let dateFormatted = moment(dateRaw).format("MM/DD/YYYY");
-                    let available = bodyParsed[i].offers[0].status;
+                    let available = bodyIndex.offers[0].status;
                     console.log("=".repeat(30));
                     console.log(`Venue: ${venue}\nLocation: ${venueLocation}\nDate: ${dateFormatted}\nStill Tickets? ${available}`);
                     console.log("=".repeat(30) + "\n");
-                }
+                });
             } else if (err) {
                 console.error(`Error: ${err}`);
             }
+            askAnotherQuestion();
         });
     });
 }
 
+function tmdbSearch() {
+    inquirer.prompt([
+        {
+            name: "movie",
+            message: "Type in a movie title."
+        },
+    ]).then(function (res) {
+        let movie = res.movie;
+        console.log(movie);
+    });
+}
+
+
+// Title of the movie.
+// Year the movie came out.
+// IMDB Rating of the movie.
+// Rotten Tomatoes Rating of the movie.
+// Country where the movie was produced.
+// Language of the movie.
+// Plot of the movie.
+// Actors in the movie.
 
 requestInput(); 
