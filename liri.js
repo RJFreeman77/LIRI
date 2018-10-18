@@ -95,25 +95,23 @@ function bandsInTown() {
         let artist = res.artist.replace(/\s+/g, '%20');
         let QUERY_URL = `https://rest.bandsintown.com/artists/${artist}/events?app_id=${bands.id}`;
         request(QUERY_URL, function (err, res, body) {
-            console.log(QUERY_URL);
             if (!err && res.statusCode === 200) {
-                console.log(body.properties);
-                // for (let i = 0; i <20; i++) {
-                // }
-                // let venue = body.venue.name;
-                // let venueLocation = body.venue.city + " " + body.venue.region;
-                // let dateRaw = body.datetime;
-                // console.log("=".repeat(30));
-                // console.log(`Venue: ${venue}\nLocation: ${venueLocation}\nDate: ${dateRaw}`);
-                // console.log("=".repeat(30) + "\n"   );
+                let bodyParsed = JSON.parse(body);
+                for (let i = 0; i < bodyParsed.length; i++) {
+                    let venue = bodyParsed[i].venue.name;
+                    let venueLocation = bodyParsed[i].venue.city + " " + bodyParsed[i].venue.region;
+                    let dateRaw = bodyParsed[i].datetime;
+                    let dateFormatted = moment(dateRaw).format("MM/DD/YYYY");
+                    let available = bodyParsed[i].offers[0].status;
+                    console.log("=".repeat(30));
+                    console.log(`Venue: ${venue}\nLocation: ${venueLocation}\nDate: ${dateFormatted}\nStill Tickets? ${available}`);
+                    console.log("=".repeat(30) + "\n");
+                }
+            } else if (err) {
+                console.error(`Error: ${err}`);
             }
         });
     });
-
-
-
-
-
 }
 
 
