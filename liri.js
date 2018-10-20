@@ -5,7 +5,7 @@ const Spotify = require('node-spotify-api');
 const keys = require("./keys.js");
 const inquirer = require("inquirer");
 const spotify = new Spotify(keys.spotify);
-const tmdb = keys.tmdb;
+const omdb = keys.omdb;
 const bands = keys.bands;
 
 function requestInput() {
@@ -20,16 +20,13 @@ function requestInput() {
         let command = res.command;
         switch (command) {
             case "Search Concert":
-                console.log("concert");
                 bandsInTown();
                 break;
             case "Search Song with Spotify":
-                console.log("spotify");
                 spotifySearch();
                 break;
             case "Search a movie":
-                tmdbSearch();
-                console.log("tmdb");
+                omdbSearch();
                 break;
             case "Do what the text file says":
                 console.log("do the thing");
@@ -37,23 +34,7 @@ function requestInput() {
                 break;
             default:
                 console.log("invalid command");
-        }
-    });
-}
-
-function askAnotherQuestion() {
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "confirm",
-            message: "Would you like to exit, or do something else?",
-            choices: ["Exit", "Do something else"]
-        }
-    ]).then(function (res) {
-        if (res.confirm === "Exit") {
-            process.exit();
-        } else {
-            requestInput();
+                askAnotherQuestion();
         }
     });
 }
@@ -93,15 +74,17 @@ function bandsInTown() {
     ]).then(function (res) {
         let artist = res.artist.replace(/\s+/g, '%20');
         let QUERY_URL = `https://rest.bandsintown.com/artists/${artist}/events?app_id=${bands.id}`;
+
         request(QUERY_URL, function (err, res, body) {
+            let bodyParsed = JSON.parse(body);
             if (!err && res.statusCode === 200) {
-                let bodyParsed = JSON.parse(body);
                 bodyParsed.forEach(function (bodyIndex) {
                     let venue = bodyIndex.venue.name;
                     let venueLocation = bodyIndex.venue.city + " " + bodyIndex.venue.region;
                     let dateRaw = bodyIndex.datetime;
                     let dateFormatted = moment(dateRaw).format("MM/DD/YYYY");
                     let available = bodyIndex.offers[0].status;
+
                     console.log("=".repeat(30));
                     console.log(`Venue: ${venue}\nLocation: ${venueLocation}\nDate: ${dateFormatted}\nStill Tickets? ${available}`);
                     console.log("=".repeat(30) + "\n");
@@ -114,26 +97,48 @@ function bandsInTown() {
     });
 }
 
-function tmdbSearch() {
+function omdbSearch() {
     inquirer.prompt([
         {
             name: "movie",
             message: "Type in a movie title."
         },
     ]).then(function (res) {
-        let movie = res.movie;
-        console.log(movie);
+        let movie = res.movie.replace(/\s+/g, '%20');
+        let QUERY_URL = `http://www.omdbapi.com/?apikey=${omdb.id}&type=movie&t=${movie}`;
+
+        request(QUERY_URL, function (err, res, body) {
+            let JSONBody = JSON.parse(body);
+            if (!err && res.statusCode === 200) {
+                if (JSONBody.Response.includes("False")) { console.log("No results returned. Please Try again."); }
+                console.log("=".repeat(30));
+                console.log(`Title: ${JSONBody.Title}\nYear: ${JSONBody.Released}\nIMDB Rating: ${JSONBody.Ratings[0].Value}\nRotten Tomatos Rating: ${JSONBody.Ratings[1].Value}\nCountry Produced: ${JSONBody.Country}\nLanguage: ${JSONBody.Language}\nPlot: ${JSONBody.Plot}\n Actors: ${JSONBody.Actors}`);
+                console.log("=".repeat(30 + "\n"));
+
+            } else if (err) {
+                console.error("Error: " + err);
+            }
+
+            askAnotherQuestion();
+        });
     });
 }
 
-
-// Title of the movie.
-// Year the movie came out.
-// IMDB Rating of the movie.
-// Rotten Tomatoes Rating of the movie.
-// Country where the movie was produced.
-// Language of the movie.
-// Plot of the movie.
-// Actors in the movie.
+function askAnotherQuestion() {
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "confirm",
+            message: "Would you like to exit, or keep going?",
+            choices: ["Keep Going", "Exit"]
+        }
+    ]).then(function (res) {
+        if (res.confirm === "Exit") {
+            process.exit();
+        } else {
+            requestInput();
+        }
+    });
+}
 
 requestInput(); 
