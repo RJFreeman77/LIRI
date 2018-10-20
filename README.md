@@ -17,20 +17,20 @@ To make this app work, you will need to use npm to install the dependencies from
 Please see the screen shots below to see how the application works. 
 
 To start, you get the 4 options. 
-- ![How to start](images/start.png)
+- ![How to start](images/start.PNG)
 
 Searching for a concert with a band name.
 - ![Search for concert](images/bands_in_town.PNG)
 
 Searching for a song with Spotify.
-- ![Search a song]{images/spotify_song.png}
+- ![Search a song]{images/spotify_song.PNG}
 
 Searching for a movie. 
 - (First image shows what happens if you enter the name of a movie that does not exist).
-- ![Search with no result](images/movie_no_result.png)
-- ![Search with result]{images/movie_result.png}
+- ![Search with no result](images/movie_no_result.PNG)
+- ![Search with result](images/movie_result.png)
 
 Searching for a song from a Text File. 
 - Here, the app will search what is typed into the random.txt text file. 
 - This process could have been DRY'er if I had a little more time. I basicaly coppied code from the Spotify function, rather than finding a way to reuse it. 
-- ![Use Text FIle](images/use_txt_file.png) 
+- ![Use Text FIle](images/use_txt_file.PNG) 
