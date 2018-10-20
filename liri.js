@@ -123,7 +123,10 @@ function omdbSearch() {
         request(QUERY_URL, function (err, res, body) {
             let JSONBody = JSON.parse(body);
             if (!err && res.statusCode === 200) {
-                if (JSONBody.Response.includes("False")) { console.log("No results returned. Please Try again."); }
+                if (JSONBody.Response.includes("False")) {
+                    console.log("No results returned. Please Try again.");
+                    return askAnotherQuestion();
+                }
                 let formatedDate = moment(JSONBody.Released, "DD MMM YYYY").format("YYYY")
                 console.log(`
 ${"=".repeat(30)}
@@ -149,7 +152,6 @@ function readFile() {
     fs.readFile("random.txt", "utf8", function (err, data) {
         if (err) { return console.error("Error: " + err); }
         let searchTermConverted = data.replace(/\s+/g, '%20');
-        console.log(searchTermConverted);
         spotify.search({ type: "track", query: searchTermConverted, limit: 5 }, function (err, data) {
             if (err) { console.log('Error occurred: ' + err); }
             data.tracks.items.forEach(function (index) {
