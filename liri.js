@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 const request = require("request");
 const moment = require('moment');
 const Spotify = require('node-spotify-api');
@@ -18,7 +19,7 @@ function requestInput() {
                 "Search Concert",
                 "Search Song with Spotify",
                 "Search a movie",
-                "Do what the text file says"
+                "Search song from Txt file"
             ]
         }
     ]).then(function (res) {
@@ -33,9 +34,8 @@ function requestInput() {
             case "Search a movie":
                 omdbSearch();
                 break;
-            case "Do what the text file says":
-                console.log("do the thing");
-                // do what it says function
+            case "Search song from Txt file":
+                readFile();
                 break;
             default:
                 console.log("invalid command");
@@ -52,7 +52,7 @@ function spotifySearch() {
         }
     ]).then(function (res) {
         let songTitle = res.song;
-        spotify.search({ type: "track", query: songTitle, limit: 10 }, function (err, data) {
+        spotify.search({ type: "track", query: songTitle, limit: 5 }, function (err, data) {
             if (err) { console.log('Error occurred: ' + err); }
             data.tracks.items.forEach(function (index) {
                 let artist = index.artists[0].name;
@@ -60,13 +60,13 @@ function spotifySearch() {
                 let link = index.artists[0].external_urls.spotify;
                 let album = index.album.name;
 
-                console.log("=".repeat(30));
                 console.log(`
+${"=".repeat(30)}
 Artist: ${artist}
 Title: ${name}
 Link: ${link}
-Album: ${album}`);
-                console.log("=".repeat(30) + "\n");
+Album: ${album}
+${"=".repeat(30)}`);
             });
 
             askAnotherQuestion();
@@ -94,13 +94,13 @@ function bandsInTown() {
                     let dateFormatted = moment(dateRaw).format("MM/DD/YYYY");
                     let available = bodyIndex.offers[0].status;
 
-                    console.log("=".repeat(30));
                     console.log(`
+${"=".repeat(30)}
 Venue: ${venue}
 Location: ${venueLocation}
 Date: ${dateFormatted}
-Still Tickets? ${available}`);
-                    console.log("=".repeat(30) + "\n");
+Still Tickets? ${available}
+${"=".repeat(30)}`);
                 });
             } else if (err) {
                 console.error(`Error: ${err}`);
@@ -114,7 +114,7 @@ function omdbSearch() {
     inquirer.prompt([
         {
             name: "movie",
-            message: "Type in a movie title."
+            message: "Type in a movie title"
         }
     ]).then(function (res) {
         let movie = res.movie.replace(/\s+/g, '%20');
@@ -125,8 +125,8 @@ function omdbSearch() {
             if (!err && res.statusCode === 200) {
                 if (JSONBody.Response.includes("False")) { console.log("No results returned. Please Try again."); }
                 let formatedDate = moment(JSONBody.Released, "DD MMM YYYY").format("YYYY")
-                console.log("=".repeat(30));
                 console.log(`
+${"=".repeat(30)}
 Title: ${JSONBody.Title}
 Year: ${formatedDate}
 IMDB Rating: ${JSONBody.Ratings[0].Value}
@@ -134,12 +134,38 @@ Rotten Tomatos Rating: ${JSONBody.Ratings[1].Value}
 Country Produced: ${JSONBody.Country}
 Language: ${JSONBody.Language}
 Plot: ${JSONBody.Plot}
-Actors: ${JSONBody.Actors}`);
-                console.log("=".repeat(30) + "\n");
-
+Actors: ${JSONBody.Actors}
+${"=".repeat(30)}`);
             } else if (err) {
                 console.error("Error: " + err);
             }
+
+            askAnotherQuestion();
+        });
+    });
+}
+
+function readFile() {
+    fs.readFile("random.txt", "utf8", function (err, data) {
+        if (err) { return console.error("Error: " + err); }
+        let searchTermConverted = data.replace(/\s+/g, '%20');
+        console.log(searchTermConverted);
+        spotify.search({ type: "track", query: searchTermConverted, limit: 5 }, function (err, data) {
+            if (err) { console.log('Error occurred: ' + err); }
+            data.tracks.items.forEach(function (index) {
+                let artist = index.artists[0].name;
+                let name = index.name;
+                let link = index.artists[0].external_urls.spotify;
+                let album = index.album.name;
+
+                console.log(`
+${"=".repeat(30)}                
+Artist: ${artist}
+Title: ${name}
+Link: ${link}
+Album: ${album}
+${"=".repeat(30)}`);
+            });
 
             askAnotherQuestion();
         });
