@@ -14,7 +14,12 @@ function requestInput() {
             type: "list",
             name: "command",
             message: "Please choose one from the following",
-            choices: ["Search Concert", "Search Song with Spotify", "Search a movie", "Do what the text file says"]
+            choices: [
+                "Search Concert",
+                "Search Song with Spotify",
+                "Search a movie",
+                "Do what the text file says"
+            ]
         }
     ]).then(function (res) {
         let command = res.command;
@@ -56,7 +61,11 @@ function spotifySearch() {
                 let album = index.album.name;
 
                 console.log("=".repeat(30));
-                console.log(`Artist: ${artist}\nTitle: ${name}\nLink: ${link}\nAlbum: ${album}`);
+                console.log(`
+Artist: ${artist}
+Title: ${name}
+Link: ${link}
+Album: ${album}`);
                 console.log("=".repeat(30) + "\n");
             });
 
@@ -86,7 +95,11 @@ function bandsInTown() {
                     let available = bodyIndex.offers[0].status;
 
                     console.log("=".repeat(30));
-                    console.log(`Venue: ${venue}\nLocation: ${venueLocation}\nDate: ${dateFormatted}\nStill Tickets? ${available}`);
+                    console.log(`
+Venue: ${venue}
+Location: ${venueLocation}
+Date: ${dateFormatted}
+Still Tickets? ${available}`);
                     console.log("=".repeat(30) + "\n");
                 });
             } else if (err) {
@@ -102,7 +115,7 @@ function omdbSearch() {
         {
             name: "movie",
             message: "Type in a movie title."
-        },
+        }
     ]).then(function (res) {
         let movie = res.movie.replace(/\s+/g, '%20');
         let QUERY_URL = `http://www.omdbapi.com/?apikey=${omdb.id}&type=movie&t=${movie}`;
@@ -111,9 +124,18 @@ function omdbSearch() {
             let JSONBody = JSON.parse(body);
             if (!err && res.statusCode === 200) {
                 if (JSONBody.Response.includes("False")) { console.log("No results returned. Please Try again."); }
+                let formatedDate = moment(JSONBody.Released, "DD MMM YYYY").format("YYYY")
                 console.log("=".repeat(30));
-                console.log(`Title: ${JSONBody.Title}\nYear: ${JSONBody.Released}\nIMDB Rating: ${JSONBody.Ratings[0].Value}\nRotten Tomatos Rating: ${JSONBody.Ratings[1].Value}\nCountry Produced: ${JSONBody.Country}\nLanguage: ${JSONBody.Language}\nPlot: ${JSONBody.Plot}\n Actors: ${JSONBody.Actors}`);
-                console.log("=".repeat(30 + "\n"));
+                console.log(`
+Title: ${JSONBody.Title}
+Year: ${formatedDate}
+IMDB Rating: ${JSONBody.Ratings[0].Value}
+Rotten Tomatos Rating: ${JSONBody.Ratings[1].Value}
+Country Produced: ${JSONBody.Country}
+Language: ${JSONBody.Language}
+Plot: ${JSONBody.Plot}
+Actors: ${JSONBody.Actors}`);
+                console.log("=".repeat(30) + "\n");
 
             } else if (err) {
                 console.error("Error: " + err);
